@@ -1,6 +1,8 @@
-module Utils (classifyPairs, groupByKey, makeClosure) where
+module Utils (classifyPairs, groupByKey, makeClosure, unionMap) where
 import Data.List
 import Data.Function
+import qualified Data.Set as Set
+import Data.Set (Set)
 
 classifyPairs :: Ord b => [(a, b)] -> [(b, [a])]
 classifyPairs = map remB . groupByKey snd
@@ -17,3 +19,5 @@ makeClosure f = fix . iterate f where
 	fix (x:y:r) | x == y = x
 	fix (x:r) = fix r
 
+unionMap :: (Ord b) => (a -> Set b) -> Set a -> Set b
+unionMap f = Set.fold (Set.union . f) Set.empty
