@@ -1,6 +1,7 @@
-module Utils (classifyPairs, groupByKey, makeClosure, unionMap) where
+module Utils (classifyPairs, groupByKey, makeClosure, unionMap, maybeHead, headOr) where
 import Data.List
 import Data.Function
+import Data.Maybe
 import qualified Data.Set as Set
 import Data.Set (Set)
 
@@ -21,3 +22,10 @@ makeClosure f = fix . iterate f where
 
 unionMap :: (Ord b) => (a -> Set b) -> Set a -> Set b
 unionMap f = Set.fold (Set.union . f) Set.empty
+
+maybeHead :: [a] -> Maybe a
+maybeHead (a:_) = Just a
+maybeHead [] = Nothing
+
+headOr :: a -> [a] -> a
+headOr d = fromMaybe d . maybeHead

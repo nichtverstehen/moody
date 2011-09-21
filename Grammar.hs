@@ -1,8 +1,8 @@
 module Grammar (GrammarDef(..), SymId, GrammarSym(..), Production(..), TokenInfo, 
-	buildGrammar, nullSymbol, isNt, getNt,
+	buildGrammar, nullSymbol, isNt, getNt, symId, isTerm,
 	prodHead, prodBody, prodCode, isProdStart) where
 	
-import Parser
+import Parse
 import Utils
 import Data.List
 import Data.Maybe
@@ -25,7 +25,7 @@ data GrammarDef = GrammarDef {
 	} deriving Show
 	
 type SymId = String
-data GrammarSym = Term !SymId | NT !SymId | Eps deriving (Show,Eq,Ord)
+data GrammarSym = Term !SymId | NT !SymId | Eps | Dummy deriving (Show,Eq,Ord)
 type Production = (SymId, [GrammarSym], String, Bool) -- nt, body, code, isStart
 type TokenInfo = (SymId, String) -- name, code
 
@@ -75,5 +75,8 @@ isProdStart (_, _, _, s) = s
 prodCode (_, _, c, _) = c
 
 isNt x = case x of { (NT _) -> True; _ -> False }
+isTerm x = case x of { (Term _) -> True; _ -> False }
 getNt x = case x of { (NT s) -> Just s; _ -> Nothing }
+symId (NT n) = n
+symId (Term n) = n
 

@@ -1,5 +1,5 @@
 {
-module Parser ( parseMoody, Statement(..) ) where
+module Parse ( parseMoody, Statement(..) ) where
 import Lexer
 
 happyError x = error $ "parse error " ++ (show x)
