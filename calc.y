@@ -1,5 +1,6 @@
 {
-mudule Calc where 
+module Calc where 
+data Token = TPlus | TMult | TLParen | TRParen | TNum Int deriving Show
 }
 %name calc
 
@@ -15,4 +16,4 @@ E : T { \a -> a }
 T : T mult F { \a _ b -> a * b }
 T : F { \a -> a }
 F : lparen E rparen { \_ a _ -> a }
-F : num { \TNum a -> a }
+F : num { \(TNum a) -> a }

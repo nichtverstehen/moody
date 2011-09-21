@@ -19,9 +19,11 @@ data Lr1Item = Lr1Item !Int !Int !GrammarSym deriving (Show,Eq,Ord)
 type Lr0Set = (Set Lr0Item, [(SymId, Int)])
 type Lr1Set = (Set Lr1Item, [(SymId, Int)])
 
-type GotoTable = Array Int [(SymId, Int)] -- state -> [ nt, state ]
+type GotoState = [(SymId, Int)]
+type GotoTable = Array Int GotoState -- state -> [ nt, state ]
+type ActionState = [(GrammarSym, ActionDef)]
 data ActionDef = Shift Int {- state -} | Reduce Int {- prod -} | Accept deriving (Show,Eq)
-type ActionTable = Array Int [(GrammarSym, ActionDef)] -- state -> [ term, action ]
+type ActionTable = Array Int ActionState -- state -> [ term, action ]
 
 -- CLOSURE for X -> . NT
 lrClosure0 :: GrammarDef -> SymId -> [Lr0Item]

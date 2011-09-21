@@ -1,6 +1,6 @@
 module Grammar (GrammarDef(..), SymId, GrammarSym(..), Production(..), TokenInfo, 
 	buildGrammar, nullSymbol, isNt, getNt, symId, isTerm,
-	prodHead, prodBody, prodCode, isProdStart) where
+	prodHead, prodBody, prodCode, isProdStart, tokenCode) where
 	
 import Parse
 import Utils
@@ -9,6 +9,8 @@ import Data.Maybe
 import Data.Array
 import Data.Function
 import Text.Show.Functions
+import Data.Char
+import Debug.Trace
 
 data GrammarDef = GrammarDef {
 	start :: SymId,
@@ -53,8 +55,9 @@ buildGrammar stmts = let
 	
 findTokens :: [Statement] -> [TokenInfo]
 findTokens = mapMaybe conv where
-		conv (DToken name match) = Just (name, match)
+		conv (DToken name match) = Just (name, trim match)
 		conv _ = Nothing
+		trim m = dropWhile isSpace m
 
 findProds :: [String] -> [Statement] -> [Production]
 findProds tokens = mapMaybe conv where
@@ -80,3 +83,4 @@ getNt x = case x of { (NT s) -> Just s; _ -> Nothing }
 symId (NT n) = n
 symId (Term n) = n
 
+tokenCode gr n = fromJust$ lookup n (tokens gr)
