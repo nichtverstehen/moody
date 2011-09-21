@@ -18,13 +18,14 @@ data GrammarDef = GrammarDef {
 	tokentype :: String,
 	intro :: String,
 	
+	syms :: [SymId],
 	nts :: [SymId],
 	prodByNo :: Int -> Production,
 	prodsByNt :: SymId -> [Int]
 	} deriving Show
 	
 type SymId = String
-data GrammarSym = Term !SymId | NT !SymId | Eps deriving Show
+data GrammarSym = Term !SymId | NT !SymId | Eps deriving (Show,Eq,Ord)
 type Production = (SymId, [GrammarSym], String, Bool) -- nt, body, code, isStart
 type TokenInfo = (SymId, String) -- name, code
 
@@ -45,9 +46,10 @@ buildGrammar stmts = let
 		prodByNo = (prodArr!)
 		prodsByNt = fromMaybe [] . flip lookup (classifyPairs z)
 			where z = zip [0..] (map prodHead prods)
-		nts = map prodHead prods
+		nts = nub $ map prodHead prods
+		syms = nts ++ (map fst tokens)
 	in
-		(GrammarDef start prods tokens name tokentype intro nts prodByNo prodsByNt)
+		(GrammarDef start prods tokens name tokentype intro syms nts prodByNo prodsByNt)
 	
 findTokens :: [Statement] -> [TokenInfo]
 findTokens = mapMaybe conv where
