@@ -13,9 +13,6 @@ data Token
 lexMoody :: String -> [Token]
 lexMoody x = case x of
 	[] -> []
-	(c:cs) | isSpace c -> lexMoody cs
-	(c:cs) | isAlpha c -> TId name : lexMoody rest
-		where (name, rest) = span isAlpha (c:cs)
 	(':':cs) -> TColon : lexMoody cs
 	('%':cs) -> let (name, rest) = span isAlpha cs in case name of
 		"name" -> TDName : lexMoody rest
@@ -23,6 +20,9 @@ lexMoody x = case x of
 		"token" -> TDToken : lexMoody rest
 	('{':cs) -> TCode code : lexMoody rest
 		where (code, rest) = spanCode 0 "" cs
+	(c:cs) | isSpace c -> lexMoody cs
+	(c:cs) | not (isSpace c) -> TId name : lexMoody rest
+		where (name, rest) = span (not.isSpace) (c:cs)
 	
 spanCode :: Integer -> String -> String -> (String, String)
 spanCode 0 code ('}':cs) = (code, cs)
