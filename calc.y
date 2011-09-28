@@ -1,8 +1,26 @@
 {
-module Calc where 
+import Data.Char
+import System
 data Token = TPlus | TMult | TLParen | TRParen | TNum Int deriving Show
+
+lexCalc [] = []
+lexCalc (' ':cs) = lexCalc cs
+lexCalc ('+':cs) = TPlus : lexCalc cs
+lexCalc ('*':cs) = TMult : lexCalc cs
+lexCalc ('(':cs) = TLParen : lexCalc cs
+lexCalc (')':cs) = TRParen : lexCalc cs
+lexCalc (c:cs) | isDigit c = TNum (read num) : lexCalc cs
+	where (num, rest) = span isDigit (c:cs)
+
+main = do
+	args <- getArgs
+	let src = head args
+	let tokens = lexCalc src
+	let res = parseCalc tokens
+	putStrLn (show res)
+
 }
-%name calc
+%name parseCalc
 
 %tokentype { Token }
 %token plus { TPlus }

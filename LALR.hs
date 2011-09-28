@@ -122,10 +122,10 @@ spontaneousLookaheads gr first coll = (0, Lr0Item 0 0, Eps) : (concatMap process
 	processSet :: Lr0Set -> [(Int, Lr0Item, GrammarSym)]
 	processSet (set, goto) = concatMap (processItem goto) (Set.toList set)
 	processItem :: [(SymId, Int)] -> Lr0Item -> [(Int, Lr0Item, GrammarSym)]
-	processItem goto (Lr0Item pr dot) = map makeInfo $ filter (not.isPropagation) (Set.toList j) where
+	processItem goto (Lr0Item pr dot) = map makeInfo $ filter (isSpont) (Set.toList j) where
 		j = closure$ Set.singleton (Lr1Item pr dot Dummy)
-		isPropagation (Lr1Item _ _ la) | la == Dummy = True
-		isPropagation _ = False
+		isSpont (Lr1Item pr dot la) | la == Dummy || (getSym' gr pr dot) == Eps = False
+		isSpont _ = True
 		makeInfo (Lr1Item pr dot la) = (fromJust$ lookup s goto, Lr0Item pr (dot+1), la)
 			where s = symId $ getSym' gr pr dot
 	closure = lrClosure1 gr first

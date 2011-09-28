@@ -2,7 +2,6 @@
 module Parse ( parseMoody, Statement(..) ) where
 import Lexer
 
-happyError x = error $ "parse error " ++ (show x)
 data Statement
 	= Prod String [String] String
 	| IntroCode String
@@ -14,32 +13,29 @@ data Statement
 
 %name parseMoody
 %tokentype { Token }
-%token
-	id { TId $$ }
-	colon { TColon }
-	dname { TDName }
-	dtoken { TDToken }
-	dtokentype { TDTokenType }
-	code { TCode $$ }
+%token id { TId _ }
+%token colon { TColon }
+%token dname { TDName }
+%token dtoken { TDToken }
+%token dtokentype { TDTokenType }
+%token code { TCode _ }
 
-%%
+Grammar    : Intro Statements         { \a b -> a ++ (reverse b) }
 
-Grammar    : Intro Statements         { $1 ++ (reverse $2) }
+Statements : Statements Statement     { \xs x -> x:xs }
+Statements :                          { [] }
+           
+Statement  : Directive                { \x -> x }
+Statement  : Production               { \x -> x }
+           
+Production : id colon Body code       { \(TId id) _ body (TCode c) -> Prod id (reverse body) c }
 
-Statements : Statements Statement     { $2:$1 }
-           |                          { [] }
+Body       : Body id                  { \xs (TId id) -> id:xs }
+Body       :                          { [] }
            
-Statement  : Directive                { $1 }
-           | Production               { $1 }
+Directive  : dname id                 { \_ (TId id) -> DName id }
+Directive  : dtokentype code          { \_ (TCode c) -> DTokenType c }
+Directive  : dtoken id code           { \_ (TId id) (TCode c) -> DToken id c }
            
-Production : id colon Body code       { Prod $1 (reverse $3) $4 }
-
-Body       : Body id                  { $2:$1 }
-           |                          { [] }
-           
-Directive  : dname id                 { DName $2 }
-           | dtokentype code          { DTokenType $2 }
-           | dtoken id code           { DToken $2 $3 }
-           
-Intro      : code                     { [IntroCode $1] }
-           |                          { [] }
+Intro      : code                     { \(TCode c) -> [IntroCode c] }
+Intro      :                          { [] }
