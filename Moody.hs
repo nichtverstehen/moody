@@ -1,4 +1,3 @@
-module Moody where
 import Parse
 import Lexer
 import LALR
@@ -21,3 +20,10 @@ run src = let
 	code = generateCode gr goto action
 	in code
 
+main :: IO ()
+main = do
+        srcName <- getArgs >>= return.head
+        dstName <- return (reverse (fromMaybe (reverse srcName) $ stripPrefix "y." (reverse srcName)) ++ ".hs")
+        src <- readFile srcName
+        dst <- return$ run src
+        writeFile dstName dst
