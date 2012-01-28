@@ -1,0 +1,5 @@
+A LALR parser generator implemented as part of a university task.
+
+Note, that the code is not particularly clean and optimal. Thus it is not ready for serious use.
+
+For more information on constructing parsers refer to the Dragon Book (Compilers: Principles, Techniques, and Tools by Alfred V. Aho, Monica S. Lam, Ravi Sethi, and Jeffrey D. Ullman).
